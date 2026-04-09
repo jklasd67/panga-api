@@ -28,4 +28,7 @@ class Settings(BaseSettings):
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
-    return Settings()
+    settings = Settings()
+    if settings.database_url.startswith("postgres://"):
+        settings.database_url = settings.database_url.replace("postgres://", "postgresql+psycopg2://", 1)
+    return settings
