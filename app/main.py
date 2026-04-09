@@ -414,3 +414,31 @@ def list_user_transfers(userId: str, current: User = Depends(get_current_user), 
 @app.get("/health")
 def healthcheck():
     return {"status": "ok", "timestamp": datetime.now(timezone.utc).isoformat()}
+
+
+@app.post("/api/v1/admin/deposit", response_model=AccountCreationResponse, responses={404: {"model": ErrorResponse}})
+def admin_deposit(accountNumber: str, amount: str, db: Session = Depends(get_db)):
+    """
+    Admin endpoint to deposit funds into an account (for testing only).
+    Query params: accountNumber, amount (e.g., ?accountNumber=EST12345&amount=1000.00)
+    """
+    account = db.query(Account).filter(Account.account_number == accountNumber.upper()).with_for_update().first()
+    if not account:
+        raise HTTPException(status_code=404, detail={"code": "ACCOUNT_NOT_FOUND", "message": f"Account '{accountNumber}' not found"})
+
+    try:
+        deposit_amount = to_decimal_amount(amount)
+    except Exception:
+        raise HTTPException(status_code=400, detail={"code": "INVALID_AMOUNT", "message": "Amount must be decimal string with 2 places"})
+
+    account.balance = (account.balance + deposit_amount).quantize(Decimal("0.01"))
+    db.commit()
+    db.refresh(account)
+
+    return AccountCreationResponse(
+        accountNumber=account.account_number,
+        ownerId=account.owner_id,
+        currency=account.currency,
+        balance=f"{account.balance:.2f}",
+        createdAt=account.created_at,
+    )
