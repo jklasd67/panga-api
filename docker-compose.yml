@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: panga
+      POSTGRES_USER: panga
+      POSTGRES_PASSWORD: panga
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U panga -d panga"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8081
+    env_file:
+      - .env.example
+    environment:
+      DATABASE_URL: postgresql+psycopg2://panga:panga@postgres:5432/panga
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python -m app.worker
+    env_file:
+      - .env.example
+    environment:
+      DATABASE_URL: postgresql+psycopg2://panga:panga@postgres:5432/panga
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
