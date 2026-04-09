@@ -58,8 +58,8 @@ Sammud:
 
 Kontroll:
 
-- Health: https://<sinu-web-url>/health
-- Docs: https://<sinu-web-url>/docs
+- Health: https://pangaapi-web.onrender.com/health
+- Docs (Swagger UI): https://pangaapi-web.onrender.com/docs
 
 Märkus:
 
@@ -169,12 +169,30 @@ Lisaks soovituslikud käsitsi testid:
 - timeout: failed_timeout + refund
 - interbank receive: ES256 JWT valideerimine
 
+### Testide tulemused
+
+- Automaattestid: 2 passed (`pytest -q`)
+- Live health endpoint: OK
+- Live Swagger UI: OK
+- Swagger UI kaudu testitud vood:
+  - kasutaja registreerimine
+  - konto loomine
+  - konto lookup
+  - ülekanne
+  - ülekande staatuse päring
+  - ülekande ajaloo päring
+
 ## Live URL
 
-Asenda pärast deployd:
+- API live URL:
 
-- https://YOUR-RENDER-URL.onrender.com
+- https://pangaapi-web.onrender.com
+
+## Swagger UI
+
+- Swagger UI URL:
+- https://pangaapi-web.onrender.com/docs
 
 ## GitHub esitamine
 
-Esita repositooriumi link koos selle README ja töötava deploy URL-iga.
+Esita repositooriumi link koos selle README, live URL-i ja Swagger UI URL-iga.
