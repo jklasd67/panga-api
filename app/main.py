@@ -1,6 +1,8 @@
 from datetime import datetime, timezone
 from decimal import Decimal
 import logging
+import threading
+import time
 from uuid import UUID
 
 from fastapi import Depends, FastAPI, HTTPException, status
@@ -43,11 +45,31 @@ from app.service import (
     to_decimal_amount,
     verify_and_decode_interbank,
 )
+from app.worker import process_pending_transfers
+from app.central_bank import send_heartbeat, sync_directory
 
 
 settings = get_settings()
 app = FastAPI(title=settings.app_name, version="1.0.0")
 logger = logging.getLogger("pangaapi")
+maintenance_started = False
+
+
+def maintenance_loop() -> None:
+    while True:
+        db = SessionLocal()
+        try:
+            send_heartbeat(db)
+            try:
+                sync_directory(db)
+            except Exception as exc:
+                logger.warning("Directory sync skipped: %s", exc)
+            process_pending_transfers()
+        except Exception as exc:
+            logger.warning("Maintenance loop error: %s", exc)
+        finally:
+            db.close()
+        time.sleep(10)
 
 
 @app.on_event("startup")
@@ -68,6 +90,12 @@ def startup() -> None:
                 db.commit()
     finally:
         db.close()
+
+    global maintenance_started
+    if not maintenance_started:
+        maintenance_started = True
+        thread = threading.Thread(target=maintenance_loop, daemon=True)
+        thread.start()
 
 
 @app.exception_handler(HTTPException)

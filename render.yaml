@@ -39,46 +39,6 @@ services:
           name: pangaapi-db
           property: connectionString
 
-  - type: worker
-    name: pangaapi-worker
-    env: python
-    plan: free
-    autoDeploy: true
-    buildCommand: pip install -r requirements.txt
-    startCommand: python -m app.worker
-    envVars:
-      - key: APP_ENV
-        value: prod
-      - key: BRANCH_BANK_NAME
-        value: Panga Branch Bank
-      - key: BRANCH_BASE_URL
-        fromService:
-          type: web
-          name: pangaapi-web
-          property: host
-      - key: CENTRAL_BANK_BASE_URL
-        value: https://test.diarainfra.com/central-bank
-      - key: FALLBACK_BANK_ID
-        value: LOC001
-      - key: HEARTBEAT_INTERVAL_SECONDS
-        value: "600"
-      - key: DIRECTORY_CACHE_TTL_SECONDS
-        value: "300"
-      - key: PENDING_RETRY_MAX_SECONDS
-        value: "3600"
-      - key: PENDING_TIMEOUT_SECONDS
-        value: "14400"
-      - key: SUPPORTED_CURRENCIES
-        value: EUR,USD,GBP,SEK,LVL
-      - key: JWT_PRIVATE_KEY_PATH
-        value: /opt/render/project/src/data/private_key.pem
-      - key: JWT_PUBLIC_KEY_PATH
-        value: /opt/render/project/src/data/public_key.pem
-      - key: DATABASE_URL
-        fromDatabase:
-          name: pangaapi-db
-          property: connectionString
-
 databases:
   - name: pangaapi-db
     plan: free

@@ -51,14 +51,18 @@ Sammud:
 3. Vali see repo ja kinnita [render.yaml](render.yaml).
 4. Render loob automaatselt:
 - web teenuse (FastAPI)
-- worker teenuse (pending retry + heartbeat)
 - PostgreSQL andmebaasi
-5. Pärast deployd ava web teenuse Environment ja kontrolli, et BRANCH_BASE_URL oleks sinu Renderi avalik URL (nt https://pangaapi-web.onrender.com).
+5. Tasuta plaani piirangute tõttu töötab heartbeat, directory sync ja pending retry web teenuse sees taustal.
+6. Pärast deployd ava web teenuse Environment ja kontrolli, et BRANCH_BASE_URL oleks sinu Renderi avalik URL (nt https://pangaapi-web.onrender.com).
 
 Kontroll:
 
 - Health: https://<sinu-web-url>/health
 - Docs: https://<sinu-web-url>/docs
+
+Märkus:
+
+- Kui Renderi tasuta plaan ei luba eraldi workerit, siis see projekt kasutab in-process maintenance loop'i, et hoida heartbeat ja retry loogika töös.
 
 ## Andmebaasi skeem
 
