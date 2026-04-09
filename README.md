@@ -49,11 +49,12 @@ Sammud:
 1. Pushi repositoorium GitHubi.
 2. Ava Render Dashboard ja vali New + Blueprint.
 3. Vali see repo ja kinnita [render.yaml](render.yaml).
-4. Render loob automaatselt:
+4. Veendu, et repo sisaldab [runtime.txt](runtime.txt) ja [.python-version](.python-version), et Render kasutaks Python 3.12 (mitte 3.14).
+5. Render loob automaatselt:
 - web teenuse (FastAPI)
 - PostgreSQL andmebaasi
-5. Tasuta plaani piirangute tõttu töötab heartbeat, directory sync ja pending retry web teenuse sees taustal.
-6. Pärast deployd ava web teenuse Environment ja kontrolli, et BRANCH_BASE_URL oleks sinu Renderi avalik URL (nt https://pangaapi-web.onrender.com).
+6. Tasuta plaani piirangute tõttu töötab heartbeat, directory sync ja pending retry web teenuse sees taustal.
+7. Pärast deployd ava web teenuse Environment ja kontrolli, et BRANCH_BASE_URL oleks sinu Renderi avalik URL (nt https://pangaapi-web.onrender.com).
 
 Kontroll:
 
